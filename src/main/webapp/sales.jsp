@@ -73,7 +73,7 @@ text-decoration: none;
 <ul>
 <li><a href="">회원등록</a></li>
 <li><a href="list.jsp">회원목록조회/수정</a></li>
-<li><a href="">회원매출조회</a></li>
+<li><a href="sales.jsp">회원매출조회</a></li>
 <li><a href="index.jsp">홈으로.</a></li>
 </ul>
 </nav>
@@ -84,11 +84,8 @@ text-decoration: none;
 <tr>
 	<th>회원번호</th>
 	<th>회원성명</th>
-	<th>전화번호</th>
-	<th>주소</th>
-	<th>가입일자</th>
 	<th>고객등급</th>
-	<th>거주지역</th>
+	<th>매출</th>
 </tr>
 <%
 String url="jdbc:oracle:thin:@localhost:1521:xe";
@@ -97,25 +94,16 @@ String password="1234";
 Class.forName("oracle.jdbc.driver.OracleDriver");
 Connection conn=DriverManager.getConnection(url, user, password);
 
-String sql="select * from member_tbl_02";
+String sql= "SELECT t1.custno, t1.custname, t1.grade, SUM(t2.price) price FROM member_tbl_02 t1 JOIN money_tbl_02 t2 ON t1.custno = t2.custno GROUP BY t1.custno, t1.custname, t1.grade ORDER BY price DESC";
 PreparedStatement ps=conn.prepareStatement(sql);
 ResultSet rs=ps.executeQuery();
 while(rs.next()){ 
 %>
 <tr>
-	<td><a href="update.jsp?custno=<%=rs.getInt("custno")%>"><%=rs.getInt("custno")%></a></td>
+	<td><%=rs.getInt("custno")%></td>
 	<td><%=rs.getString("custname")%></td>
-	<td><%=rs.getString("phone")%></td>
-	<td><%=rs.getString("address")%></td>
-	<% 
-	java.sql.Date imsi=rs.getDate("joindate");
-	SimpleDateFormat jdate=new SimpleDateFormat("yyyy.MM.dd.");
-	jdate.format(imsi);
-	%>
-	<td><%=jdate.format(imsi)%></td>
-	<% char g=rs.getString("grade").charAt(0); %>
-	<td><%=g=='A'?"VIP":g=='B'?"일반":"직원"%></td>
-	<td><%=rs.getString("city")%></td>
+	<td><%=rs.getString("grade")%></td>
+	<td><%=rs.getString("price")%></td>
 </tr>
 <%}
 rs.close();ps.close();conn.close();
