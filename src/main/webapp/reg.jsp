@@ -6,7 +6,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-int custno=Integer.parseInt(request.getParameter("custno"));
+int gencustno = 0;
 
 String url="jdbc:oracle:thin:@localhost:1521:xe";
 String user="system";
@@ -14,10 +14,13 @@ String password="1234";
 Class.forName("oracle.jdbc.driver.OracleDriver");
 Connection conn=DriverManager.getConnection(url, user, password);
 
-String sql="select * from member_tbl_02 where custno=?";
+String sql="select max(custno) from member_tbl_02";
 PreparedStatement ps=conn.prepareStatement(sql);
-ps.setInt(1, custno);
 ResultSet rs=ps.executeQuery();
+if(rs.next()){
+	gencustno=rs.getInt("max(custno)")+1;
+}
+rs.close(); ps.close(); conn.close();
 %>
 <!DOCTYPE html>
 <html>
@@ -79,6 +82,53 @@ color:white;
 text-decoration: none;
 }
 </style>
+<script>
+function confirm(){
+	var custno=document.getElementById("custno");
+	var custname=document.getElementById("custname");
+	var phone=document.getElementById("phone");
+	var address=document.getElementById("address");
+	var joindate=document.getElementById("joindate");
+	var grade=document.getElementById("grade");
+	var city=document.getElementById("city");
+	
+	if(custno.value===""){
+		alert("회원번호가	 입력되지 않았습니다.");
+		custno.focus();
+		return false;
+	}
+	if(custname.value===""){
+		alert("회원성명이 입력되지 않았습니다.");
+		custname.focus();
+		return false;
+	}
+	if(phone.value===""){
+		alert("회원전화번호가 입력되지 않았습니다.");
+		phone.focus();
+		return false;
+	}
+	if(address.value===""){
+		alert("회원주소가 입력되지 않았습니다.");
+		address.focus();
+		return false;
+	}
+	if(joindate.value===""){
+		alert("회원가입일자가 입력되지 않았습니다.");
+		joindate.focus();
+		return false;
+	}
+	if(grade.value===""){
+		alert("회원등급이 입력되지 않았습니다.");
+		grade.focus();
+		return false;
+	}
+	if(city.value===""){
+		alert("도시코드가 입력되지 않았습니다.");
+		city.focus();
+		return false;
+	}
+}
+</script>
 <body>
 <header>
 쇼핑몰 회원관리 ver 1.8
@@ -94,51 +144,44 @@ text-decoration: none;
 <section>
 <h3>홈쇼핑 회원등록</h3>
 <div>
-<%
-if(rs.next()){
-%>
-<form action="updateProc.jsp" method="post" onsubmit="return confirm()">
+<form action="regProc.jsp" method="post" onsubmit="return confirm()">
 <table border="1" >
 <tr>
 	<td>회원번호</td>
-	<td><input type="text" name="custno" id="custno" value="<%=rs.getInt("custno")%>"></td>
+	<td><input type="text" name="custno" id="custno" value="<%=gencustno%>"></td>
 </tr>
 <tr>
 	<td>회원성명</td>
-	<td><input type="text" name="custname" id="custname" value="<%=rs.getString("custname")%>"></td>
+	<td><input type="text" name="custname" id="custname"></td>
 </tr>
 <tr>
 	<td>회원전화번호</td>
-	<td><input type="text" name="phone" id="phone" value="<%=rs.getString("phone")%>"></td>
+	<td><input type="text" name="phone" id="phone"></td>
 </tr>
 <tr>
 	<td>회원주소</td>
-	<td><input type="text" name="address" id="address" value="<%=rs.getString("address")%>"></td>
+	<td><input type="text" name="address" id="address"></td>
 </tr>
 <tr>
 	<td>가입일자</td>
-	<td><input type="text" name="joindate" id="joindate"  value="<%=rs.getDate("joindate")%>"></td>
+	<td><input type="text" name="joindate" id="joindate"></td>
 	</tr>
 <tr>
 	<td>고객등급[A:VIP,B:일반,C:직원]</td>
-	<td><input type="text" name="grade" id="grade"  value="<%=rs.getString("grade")%>"></td>
+	<td><input type="text" name="grade" id="grade"></td>
 </tr>
 <tr>
 	<td>도시코드</td>
-	<td><input type="text" name="city" id="city" value="<%=rs.getString("city")%>"></td>
+	<td><input type="text" name="city" id="city"></td>
 </tr>
 <tr>
 	<td colspan="2" style="text-align: center">
-		<input type="submit" value="수정">
+		<input type="submit" value="등록">
 		<input type="button" value="조회" onclick="location.href='list.jsp'">
 	</td>
 </tr>
 </table>
 </form>
-<%
-}
-rs.close(); ps.close(); conn.close();
-%>
 </div>
 </section>
 <footer>

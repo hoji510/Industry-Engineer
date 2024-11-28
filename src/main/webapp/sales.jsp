@@ -71,7 +71,7 @@ text-decoration: none;
 </header>
 <nav>
 <ul>
-<li><a href="">회원등록</a></li>
+<li><a href="reg.jsp">회원등록</a></li>
 <li><a href="list.jsp">회원목록조회/수정</a></li>
 <li><a href="sales.jsp">회원매출조회</a></li>
 <li><a href="index.jsp">홈으로.</a></li>
